@@ -1,0 +1,2 @@
+g++ hw.cpp -o hw
+./hw
