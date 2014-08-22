@@ -6,8 +6,8 @@ using namespace  std;
 int main() {
     string line;
 
-    ifstream logfile ("excel/mylog/glassesonly.csv");
-    ofstream outputfile ("excel/mylog/g.txt", ios::app);
+    ifstream logfile ("mylog/summerlog.txt");
+    ofstream outputfile ("mylog/g.txt", ios::app);
     if (logfile.is_open()) {
         while ( getline (logfile,line) ) {
             string delimiter = "\t";

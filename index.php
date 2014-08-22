@@ -1,17 +1,16 @@
 <?php
 
-    $lines = explode("\n", file_get_contents('eg.txt'));
+    $lines = explode("\n", file_get_contents('glassesonly.txt'));
 
-    $pieces = explode(" ", $lines[1]);
     echo '<table>';
-    echo '<tr>';
-    for ($i=0; $i < 48; $i++) {
-        if ($pieces[$i]=="") {
-        } else {
-            echo '<td>'.$pieces[$i].'</td>';
+    for ($i=0; $i < 50; $i++) {
+        $pieces = explode(",", $lines[i]);
+        echo '<tr>';
+        for ($i=0; $i < 48; $i++) {
+                echo '<td>'.$pieces[$i].'</td>';
         }
+        echo '</tr>';
     }
-    echo '</tr>';
     echo '</table>';
 
 ?>
