@@ -16,8 +16,8 @@ using namespace  std;
 int main() {
     string line;
 
-    //ifstream logfile("mylog/glassesonly.csv");
-    ifstream logfile("mylog/summerlog.txt");
+    ifstream logfile("mylog/glassesonly.csv");
+    //ifstream logfile("mylog/summerlog.txt");
     ofstream outputfile ("uniqueviews.csv", ios::app);
     int lineone, newday, secs, mins, hours, t, dayscount, linecount, prevdaycount;
     char extra;
@@ -48,15 +48,17 @@ int main() {
     set<string> hashunique;
     set<string> uniquevideos;
     int totalplays = 0;
-
+    int sec5, sec10, sec15, sec20, sec25, sec30, sec35, sec40, secplus = 0;
+    int maincounttest = 0;
+    int incdayscount = 0;
 
     int totallines = count(istreambuf_iterator<char>(logfile),
              istreambuf_iterator<char>(), '\n');
     //cout << totallines << endl;
     logfile.close();
     logfile.clear();
-    //logfile.open("glassesonly.csv");
-    logfile.open("mylog/summerlog.txt");
+    logfile.open("mylog/glassesonly.csv");
+    //logfile.open("mylog/summerlog.txt");
     if (logfile.is_open()) {
         while ( getline (logfile,line) ) {
 
@@ -69,13 +71,15 @@ int main() {
 
                             if(token==prevday) {
                                 prevdaycount = dayscount;
-                                dayscount = dayscount +1;
+                                incdayscount = 1;
                                 newday = 0;
                             } else {
                                 currentday = token;
                                 prevdaycount = dayscount;
-                                dayscount = 1;
+                                //dayscount = 1;
                                 newday = 1;
+                                incdayscount = 0;
+
                             }
                         } else if (count==1) {
                             // token  = current time in this if loop
@@ -87,24 +91,26 @@ int main() {
                                >> secs;
                             t = (hours*3600)+(mins*60)+secs;
                         } else if (count==3) {
-                            //int a[] = {66052, 66053, 66054, 361, 363, 502};
+                            // File size - bytes
+                            float value = atoi(token.c_str());
+                            float sec = value/769629;
 
-                            int value = atoi(token.c_str());
                             if (value < 600 ) {
                             //if (value < 1) {
                                 maincount = 0;
+
                             } else if(value < 66060 && value > 66040) {
                                maincount = 0;
                             } else if(value > 8000 && value < 9000) {
-                                maincount = 0;
-
+                               maincount = 0;
                             } else {
-                                cout << token << endl;
-                                outputfile << token << endl;
+                                //cout << token << endl;
+                                //outputfile << token << endl;
                                 maincount = 1;
                                 totalplays = totalplays + 1;
                                 bytes.insert(token);
                             }
+
                         } else if (count==4) {
                             if (maincount == 1) {
                                 //uniqueips.insert(token);
@@ -118,8 +124,7 @@ int main() {
                                 sameip = 0;
                                 currentip = token;
                             }
-                        } else if(count == 7) {
-                            // video name
+                        } else if(count == 7) { // video name
                             //if (maincount == 1 && (token == "/133376/01_glasses.mp4" || token == "/133376/02_glasses.mp4" ||token == "/133376/03_glasses.mp4" ||token == "/133376/04_glasses.mp4" ||token == "/133376/05_glasses.mp4")) {
                             if (maincount == 1) {
                                 uniqueips.insert(currentip);
@@ -130,7 +135,8 @@ int main() {
                             }
                             uniquevideos.insert(token);
 
-                        } else if (count==14) {
+                        } else if (count==14) {   // hashes
+
                             hashunique.insert(token);
                             //cout << token << endl;
                         } else if (count==17) {
@@ -182,26 +188,32 @@ int main() {
                 cout << "new day: " << newday << endl;
 
                 }*/
+                if (maincount==1 && incdayscount==1) {
+                    maincounttest = maincounttest + 1;
+                    dayscount = dayscount +1;
+                } else if (incdayscount==0) {
+                    dayscount = 1;
+                }
 
                 //cout << "the lines " << totallines << " " << linecount << endl;
                 count = 0;
-                if ((newday == 1) && linecount>1) {
+                if (newday == 1 && (linecount>1)) {
                     dwelltimeavg = ceil(totaltimediff/avgdivider);
-                    //cout << "avg dwell time: " << dwelltimeavg << endl;
+                    cout << "days count: " << dayscount << endl;
                     avgdivider = 0;
                     totaltimediff = 0;
-/*
+
                         outputfile << prevday << ","
                                    << prevdaycount << ","
                                    //<< uniqueipcount << ","
                                    << dwelltimeavg << ","
                                    << ipset.size()
                                    << endl;
-                                   */
+
                     ipset.clear();
                     timediff = 0;
                 }
-                if (linecount==totallines) {
+                if (linecount==totallines && maincount==1) {
                     timediff  = prevt - startt;
                     avgdivider = avgdivider+1;
                     totaltimediff = totaltimediff+timediff;
@@ -213,14 +225,14 @@ int main() {
                     //cout << "avg dwell time: " << dwelltimeavg << endl;
                     avgdivider = 0;
                     totaltimediff = 0;
-                    /*
+
                     outputfile << currentday << ","
                                 << dayscount << ","
                                 //<< uniqueipcount << ","
                                 << dwelltimeavg << ","
                                 << ipset.size()
                                 << endl;
-                                */
+
                 }
                 if (sameip==0) {
                     startt = t;
@@ -238,6 +250,18 @@ int main() {
         cout << "Number of unique file sizes: " << bytes.size() << endl;
         cout << "Number of videos: " << uniquevideos.size() << endl;
         cout << "Specific Video Count: " << specificvidcount << endl;
+        cout << "--------------------------------------------------" << endl;
+        cout << "main count test: " << maincounttest << endl;
+        cout << "--------------------------------------------------" << endl;
+        cout << "5 Video count: " << sec5 << endl;
+        cout << "10 Video count: " << sec10 << endl;
+        cout << "15 Video count: " << sec15 << endl;
+        cout << "20 Video count: " << sec20 << endl;
+        cout << "25 Video count: " << sec25 << endl;
+        cout << "30 Video count: " << sec30 << endl;
+        cout << "35 Video count: " << sec35 << endl;
+        cout << "40 Video count: " << sec40 << endl;
+        cout << "Over 40seconds Video count: " << sec40 << endl;
 
 
         logfile.close();
